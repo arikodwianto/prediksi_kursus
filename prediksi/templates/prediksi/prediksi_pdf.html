@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: DejaVu Sans, sans-serif; font-size: 12px; margin: 30px; }
+        .kop-surat {
+            text-align: center;
+            border-bottom: 3px solid #000;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
+        .kop-surat h1 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .kop-surat p {
+            margin: 2px 0;
+            font-size: 12px;
+        }
+        h2 {
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #333;
+            padding: 6px;
+            text-align: left;
+        }
+        .section-title {
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 11px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- KOP SURAT -->
+    <div class="kop-surat">
+        <h1>LEMBAGA KURSUS DAN PELATIHAN XYZ</h1>
+        <p>Jl. Pendidikan No. 123, Kota Ilmu, Indonesia</p>
+        <p>Telepon: (0123) 456789 | Email: info@kursusxyz.ac.id</p>
+    </div>
+
+    <!-- JUDUL -->
+    <h2>LAPORAN PREDIKSI PENDAFTARAN KURSUS</h2>
+
+    <!-- HASIL PREDIKSI -->
+    <p><strong>Hasil Prediksi:</strong> {{ hasil_prediksi }}</p>
+    {% if akurasi %}
+    <p><strong>Akurasi:</strong> {{ akurasi }}%</p>
+    <p><strong>Precision:</strong> {{ precision }}%</p>
+    <p><strong>Recall:</strong> {{ recall }}%</p>
+    {% endif %}
+
+    <!-- DATA INPUT -->
+    <div class="section-title">Data Input</div>
+    <table>
+        <tbody>
+            <tr><th>Hari</th><td>{{ input.hari }}</td></tr>
+            <tr><th>Waktu</th><td>{{ input.waktu }}</td></tr>
+            <tr><th>Durasi</th><td>{{ input.durasi }}</td></tr>
+            <tr><th>Paket</th><td>{{ input.paket }}</td></tr>
+            <tr><th>Umur</th><td>{{ input.umur }}</td></tr>
+            <tr><th>Jenis Kelamin</th><td>{{ input.jenis_kelamin }}</td></tr>
+            <tr><th>Pekerjaan</th><td>{{ input.pekerjaan }}</td></tr>
+        </tbody>
+    </table>
+
+    <!-- TETANGGA TERDEKAT -->
+    <div class="section-title">3 Data Latih Terdekat</div>
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th>Status</th>
+                <th>Jarak</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in tetangga_terdekat %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ t.nama }}</td>
+                <td>{{ t.status }}</td>
+                <td>{{ t.jarak }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        Dicetak pada: {{ now|date:"d M Y, H:i" }}
+    </div>
+
+</body>
+</html>

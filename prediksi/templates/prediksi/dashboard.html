@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Dashboard Prediksi</h2>
+
+    <!-- Statistik Box -->
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary shadow">
+                <div class="card-body">
+                    <h6 class="card-title">Total Data Uji</h6>
+                    <h3 class="card-text">{{ total_uji }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success shadow">
+                <div class="card-body">
+                    <h6 class="card-title">Prediksi Bisa</h6>
+                    <h3 class="card-text">{{ total_bisa }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-danger shadow">
+                <div class="card-body">
+                    <h6 class="card-title">Prediksi Tidak Bisa</h6>
+                    <h3 class="card-text">{{ total_tidak_bisa }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info shadow">
+                <div class="card-body">
+                    <h6 class="card-title">Total Data Latih</h6>
+                    <h3 class="card-text">{{ total_latih }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Diagram + Penjelasan KNN -->
+    <div class="row mt-5">
+        <!-- Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Distribusi Prediksi</h5>
+                    <canvas id="prediksiChart" width="100%" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Penjelasan KNN -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Penjelasan Metode KNN</h5>
+                    <p style="text-align: justify;">
+                        <strong>K-Nearest Neighbors (KNN)</strong> adalah algoritma klasifikasi berbasis instance learning yang bekerja dengan cara membandingkan data uji dengan data latih yang memiliki fitur serupa. Algoritma ini akan:
+                    </p>
+                    <ol>
+                        <li>Menghitung jarak antara data uji dan seluruh data latih (biasanya dengan Euclidean distance).</li>
+                        <li>Memilih <strong>K tetangga terdekat</strong> berdasarkan jarak tersebut.</li>
+                        <li>Menentukan hasil prediksi berdasarkan mayoritas kelas dari K tetangga tersebut.</li>
+                    </ol>
+                    <p>
+                        KNN cocok digunakan dalam kasus prediksi sederhana seperti ini karena tidak memerlukan proses pelatihan model yang kompleks. Meskipun demikian, performanya sangat bergantung pada pemilihan nilai K dan kualitas data latih.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('prediksiChart').getContext('2d');
+    const prediksiChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Bisa', 'Tidak Bisa'],
+            datasets: [{
+                label: 'Jumlah Prediksi',
+                data: [{{ total_bisa }}, {{ total_tidak_bisa }}],
+                backgroundColor: ['#28a745', '#dc3545'],
+                borderColor: ['#ffffff', '#ffffff'],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let total = {{ total_bisa }} + {{ total_tidak_bisa }};
+                            let value = context.raw;
+                            let percent = ((value / total) * 100).toFixed(1);
+                            return `${context.label}: ${value} (${percent}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

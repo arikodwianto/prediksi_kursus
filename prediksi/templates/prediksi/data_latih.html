@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Card -->
+    <div class="card mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Data Latih</h6>
+        </div>
+        <div class="card-body">
+            <!-- Upload CSV -->
+            <form method="post" enctype="multipart/form-data" action="{% url 'import_data_latih' %}" class="mb-4">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="formFile" class="form-label">Import Data CSV</label>
+                    <input type="file" name="csv_file" id="formFile" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-success">Import CSV</button>
+            </form>
+
+            <!-- Pesan -->
+            {% if messages %}
+                <div class="mb-3">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Data Table -->
+            <div class="table-responsive">
+                <table id="dataLatihTable" class="table table-striped" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama</th>
+                            <th>Hari</th>
+                            <th>Waktu</th>
+                            <th>Durasi</th>
+                            <th>Paket</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in data %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ d.nama }}</td>
+                            <td>{{ d.get_hari_display }}</td>
+                            <td>{{ d.get_waktu_display }}</td>
+                            <td>{{ d.durasi }}</td>
+                            <td>{{ d.get_paket_display }}</td>
+                            <td>{{ d.status }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+
+<!-- jQuery (wajib duluan) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+$(document).ready(function () {
+    $('#dataLatihTable').DataTable({
+        "lengthMenu": [10, 25, 50, 100],
+        "pageLength": 10,
+        "language": {
+            "lengthMenu": "Tampilkan _MENU_ data per halaman",
+            "zeroRecords": "Tidak ada data ditemukan",
+            "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+            "infoEmpty": "Tidak ada data tersedia",
+            "infoFiltered": "(disaring dari total _MAX_ data)",
+            "search": "Cari:",
+            "paginate": {
+                "first": "Pertama",
+                "last": "Terakhir",
+                "next": "Berikutnya",
+                "previous": "Sebelumnya"
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

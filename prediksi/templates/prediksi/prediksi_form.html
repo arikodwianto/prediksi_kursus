@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Prediksi Pendaftaran Kursus Mobil</h2>
+
+    <!-- Form Input -->
+    <form method="post" class="card p-4 shadow-sm mb-4">
+        {% csrf_token %}
+        <div class="row g-3">
+            <div class="col-md-6">
+                {{ form.nama.label_tag }} {{ form.nama }}
+            </div>
+            <div class="col-md-6">
+                {{ form.hari.label_tag }} {{ form.hari }}
+            </div>
+            <div class="col-md-6">
+                {{ form.waktu.label_tag }} {{ form.waktu }}
+            </div>
+            <div class="col-md-6">
+                {{ form.durasi.label_tag }} {{ form.durasi }}
+            </div>
+            <div class="col-md-6">
+                {{ form.paket.label_tag }} {{ form.paket }}
+            </div>
+        </div>
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Prediksi</button>
+            <a href="{% url 'cetak_prediksi_pdf' %}" class="btn btn-success">Cetak Laporan PDF</a>
+        </div>
+    </form>
+
+    <!-- Hasil Prediksi -->
+    <!-- Hasil Prediksi -->
+<!-- Hasil Prediksi -->
+{% if hasil_prediksi %}
+<div class="card mt-4 shadow-sm">
+    <div class="card-header bg-info text-white">
+        <h5 class="mb-0">Hasil Prediksi</h5>
+    </div>
+    <div class="card-body">
+        <p><strong>Status Prediksi:</strong> {{ hasil_prediksi }}</p>
+        {% if alasan %}
+        <p class="mt-2 text-muted"><em>Keterangan: {{ alasan }}</em></p>
+        {% endif %}
+
+        <p><strong>Akurasi:</strong> {{ akurasi|default:"-" }}%</p>
+        <div class="progress mb-2">
+            <div class="progress-bar bg-success" role="progressbar"
+                 style="width: {{ akurasi|default:0 }}%;"
+                 aria-valuenow="{{ akurasi|default:0 }}" aria-valuemin="0" aria-valuemax="100">
+            </div>
+        </div>
+
+        <p><strong>Precision:</strong> {{ precision|default:"-" }}%</p>
+        <div class="progress mb-2">
+            <div class="progress-bar bg-primary" role="progressbar"
+                 style="width: {{ precision|default:0 }}%;"
+                 aria-valuenow="{{ precision|default:0 }}" aria-valuemin="0" aria-valuemax="100">
+            </div>
+        </div>
+
+        <p><strong>Recall:</strong> {{ recall|default:"-" }}%</p>
+        <div class="progress">
+            <div class="progress-bar bg-warning" role="progressbar"
+                 style="width: {{ recall|default:0 }}%;"
+                 aria-valuenow="{{ recall|default:0 }}" aria-valuemin="0" aria-valuemax="100">
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+
+
+
+    <!-- Tetangga Terdekat -->
+    {% if tetangga_terdekat %}
+    <div class="card mt-4 shadow-sm">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">3 Data Latih Terdekat</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Nama</th>
+                        <th>Status</th>
+                        <th>Jarak</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tetangga in tetangga_terdekat %}
+                    <tr>
+                        <td>{{ tetangga.nama }}</td>
+                        <td>{{ tetangga.status }}</td>
+                        <td>{{ tetangga.jarak }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Rumus dan Penjelasan -->
+    <div class="card mt-5 shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Rumus KNN dan Evaluasi</h5>
+        </div>
+        <div class="card-body">
+            <h5>1. Jarak Euclidean</h5>
+            <p>
+                $$ \text{Jarak}(x, y) = \sqrt{(x_1 - y_1)^2 + (x_2 - y_2)^2 + \dots + (x_n - y_n)^2} $$
+            </p>
+
+            <h5>2. Akurasi</h5>
+            <p>
+                $$ \text{Akurasi} = \frac{TP + TN}{TP + TN + FP + FN} \times 100\% $$
+            </p>
+
+            <h5>3. Precision</h5>
+            <p>
+                $$ \text{Precision} = \frac{TP}{TP + FP} \times 100\% $$
+            </p>
+
+            <h5>4. Recall</h5>
+            <p>
+                $$ \text{Recall} = \frac{TP}{TP + FN} \times 100\% $$
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
