@@ -39,10 +39,21 @@ class DataLatihForm(forms.ModelForm):
             'status': forms.Select(attrs={'class': 'form-control'}),
         }
 
+from django import forms
+from .models import DataUji
+
 class DataUjiForm(forms.ModelForm):
+    k = forms.IntegerField(
+        min_value=1,
+        max_value=20,
+        initial=3,
+        help_text="Masukkan nilai k (jumlah tetangga terdekat)",
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )
+
     class Meta:
         model = DataUji
-        fields = ['nama', 'hari', 'waktu', 'durasi', 'paket']
+        fields = ['nama', 'hari', 'waktu', 'durasi', 'paket', 'k']
         widgets = {
             'nama': forms.TextInput(attrs={'class': 'form-control'}),
             'hari': forms.Select(attrs={'class': 'form-control'}),

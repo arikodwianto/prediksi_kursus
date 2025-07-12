@@ -98,6 +98,17 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score, recall_score
 
 
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
+from .models import DataLatih, DataUji
+from .forms import DataUjiForm
+
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, precision_score, recall_score
+
 @login_required
 def prediksi_view(request):
     hasil_prediksi = None
@@ -105,13 +116,15 @@ def prediksi_view(request):
     precision = None
     recall = None
     tetangga_terdekat = []
-    alasan = None  # >>> Tambahan
+    alasan = None
 
     if request.method == 'POST':
         form = DataUjiForm(request.POST)
         if form.is_valid():
             uji = form.save(commit=False)
+            k = form.cleaned_data['k']
 
+            # Siapkan data uji
             input_vector = [
                 uji.hari,
                 uji.waktu,
@@ -122,6 +135,7 @@ def prediksi_view(request):
                 encode_pekerjaan('Lainnya')
             ]
 
+            # Siapkan data latih
             X, y = [], []
             data_latih_all = list(DataLatih.objects.all())
             for d in data_latih_all:
@@ -132,7 +146,7 @@ def prediksi_view(request):
                 ])
                 y.append(d.status)
 
-            model = KNeighborsClassifier(n_neighbors=3)
+            model = KNeighborsClassifier(n_neighbors=k)
 
             if len(X) >= 5:
                 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
@@ -145,6 +159,7 @@ def prediksi_view(request):
                 precision = round(precision_score(y_test, y_pred, average='macro', zero_division=0) * 100, 2)
                 recall = round(recall_score(y_test, y_pred, average='macro', zero_division=0) * 100, 2)
 
+                # Ambil tetangga terdekat
                 distances, indices = model.kneighbors([input_vector])
                 for idx, dist in zip(indices[0], distances[0]):
                     d = data_latih_all[int(idx)]
@@ -154,24 +169,25 @@ def prediksi_view(request):
                         'jarak': round(dist, 4)
                     })
 
-                # >>> Tambahan: hitung alasan
+                # Hitung alasan
                 status_count = {}
                 for tetangga in tetangga_terdekat:
                     status = tetangga['status']
                     status_count[status] = status_count.get(status, 0) + 1
-                # cari mayoritas
+
                 if status_count:
                     mayoritas_status = max(status_count, key=status_count.get)
                     jumlah = status_count[mayoritas_status]
                     alasan = f"Hasil prediksi '{pred}' karena mayoritas dari {len(tetangga_terdekat)} tetangga terdekat memiliki status '{mayoritas_status}' sebanyak {jumlah} data."
 
             else:
+                # Data latih kurang dari 5
                 model.fit(X, y)
                 pred = model.predict([input_vector])[0]
-                akurasi = precision = recall = 0  # Tidak dihitung karena data kurang
+                akurasi = precision = recall = 0
                 alasan = "Data latih kurang dari 5, sehingga hasil prediksi didapat langsung dari model tanpa perhitungan tetangga mayoritas."
 
-            # Konversi hasil prediksi
+            # Ubah hasil prediksi jadi lebih deskriptif
             if pred == "Bisa":
                 hasil_prediksi = "Bisa mengikuti kursus"
             elif pred == "Tidak Bisa":
@@ -182,21 +198,27 @@ def prediksi_view(request):
             uji.hasil_prediksi = pred
             uji.save()
 
+            # Simpan ke session (opsional)
             request.session['prediksi_data'] = {
                 'hasil_prediksi': hasil_prediksi,
                 'akurasi': akurasi,
                 'precision': precision,
                 'recall': recall,
                 'tetangga_terdekat': tetangga_terdekat,
-                'alasan': alasan,  # >>> Tambahan
+                'alasan': alasan,
                 'input': {
                     'nama': uji.nama,
                     'hari': uji.hari,
                     'waktu': uji.waktu,
                     'durasi': uji.durasi,
-                    'paket': uji.paket
+                    'paket': uji.paket,
+                    'k': k
                 }
             }
+
+        else:
+            messages.error(request, "Form tidak valid. Periksa input Anda.")
+
     else:
         form = DataUjiForm()
 
@@ -207,7 +229,7 @@ def prediksi_view(request):
         'precision': precision,
         'recall': recall,
         'tetangga_terdekat': tetangga_terdekat,
-        'alasan': alasan  # >>> Tambahan
+        'alasan': alasan
     })
 
 
@@ -298,3 +320,22 @@ def import_data_latih(request):
         return redirect('data_latih')
 
     return redirect('data_latih')
+
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from .forms import DataLatihForm
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def tambah_data_latih(request):
+    if request.method == 'POST':
+        form = DataLatihForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Data latih berhasil ditambahkan!')
+            return redirect('data_latih')  # ganti sesuai nama url ke list data latih
+        else:
+            messages.error(request, 'Ada kesalahan. Silakan periksa kembali.')
+    else:
+        form = DataLatihForm()
+    return render(request, 'prediksi/tambah_data_latih.html', {'form': form})

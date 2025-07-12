@@ -16,4 +16,6 @@ urlpatterns = [
     path('prediksi/cetak/', cetak_prediksi_pdf, name='cetak_prediksi_pdf'),
     path('riwayat/', riwayat_prediksi_view, name='riwayat_prediksi'),
     path('riwayat/cetak/', cetak_riwayat_pdf, name='cetak_riwayat_pdf'),
+    path('tambah-data-latih/', views.tambah_data_latih, name='tambah_data_latih')
+
 ]
