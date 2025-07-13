@@ -1,44 +1,49 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
     <meta charset="utf-8">
     <style>
-        body { font-family: DejaVu Sans, sans-serif; font-size: 12px; margin: 30px; }
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 12px;
+            margin: 30px;
+        }
         .kop-surat {
             text-align: center;
             border-bottom: 3px solid #000;
             margin-bottom: 20px;
             padding-bottom: 10px;
         }
-        .kop-surat h1 {
-            margin: 0;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .kop-surat p {
-            margin: 2px 0;
-            font-size: 12px;
-        }
         h2 {
             text-align: center;
             margin-top: 10px;
             margin-bottom: 20px;
         }
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            padding: 10px;
+        }
+        .card-header {
+            font-weight: bold;
+            background: #f2f2f2;
+            padding: 5px 10px;
+            border-bottom: 1px solid #ccc;
+            margin: -10px -10px 10px -10px;
+            border-radius: 6px 6px 0 0;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
-            margin-bottom: 20px;
         }
         th, td {
             border: 1px solid #333;
-            padding: 6px;
+            padding: 5px 8px;
             text-align: left;
         }
-        .section-title {
-            font-weight: bold;
-            margin-top: 20px;
-            margin-bottom: 10px;
+        th {
+            background-color: #f9f9f9;
         }
         .footer {
             margin-top: 30px;
@@ -49,44 +54,35 @@
 </head>
 <body>
 
-    <!-- KOP SURAT -->
-    <div class="kop-surat">
-        <h1>LEMBAGA KURSUS DAN PELATIHAN XYZ</h1>
-        <p>Jl. Pendidikan No. 123, Kota Ilmu, Indonesia</p>
-        <p>Telepon: (0123) 456789 | Email: info@kursusxyz.ac.id</p>
-    </div>
+<div class="kop-surat">
+    <h1>SUMBER REZEKI TANJUNGPINANG</h1>
+</div>
 
-    <!-- JUDUL -->
-    <h2>LAPORAN PREDIKSI PENDAFTARAN KURSUS</h2>
+<h2>LAPORAN HASIL PREDIKSI PENDAFTARAN KURSUS</h2>
 
-    <!-- HASIL PREDIKSI -->
-    <p><strong>Hasil Prediksi:</strong> {{ hasil_prediksi }}</p>
-    {% if akurasi %}
-    <p><strong>Akurasi:</strong> {{ akurasi }}%</p>
-    <p><strong>Precision:</strong> {{ precision }}%</p>
-    <p><strong>Recall:</strong> {{ recall }}%</p>
-    {% endif %}
+<p><strong>Hasil Prediksi:</strong> {{ hasil_prediksi }}</p>
+{% if akurasi %}
+<p><strong>Akurasi:</strong> {{ akurasi }}%</p>
+<p><strong>Precision:</strong> {{ precision }}%</p>
+<p><strong>Recall:</strong> {{ recall }}%</p>
+{% endif %}
 
-    <!-- DATA INPUT -->
-    <div class="section-title">Data Input</div>
+<div class="card">
+    <div class="card-header">Data Input</div>
     <table>
-        <tbody>
-            <tr><th>Hari</th><td>{{ input.hari }}</td></tr>
-            <tr><th>Waktu</th><td>{{ input.waktu }}</td></tr>
-            <tr><th>Durasi</th><td>{{ input.durasi }}</td></tr>
-            <tr><th>Paket</th><td>{{ input.paket }}</td></tr>
-            <tr><th>Umur</th><td>{{ input.umur }}</td></tr>
-            <tr><th>Jenis Kelamin</th><td>{{ input.jenis_kelamin }}</td></tr>
-            <tr><th>Pekerjaan</th><td>{{ input.pekerjaan }}</td></tr>
-        </tbody>
+        <tr><th>Hari</th><td>{{ input.hari }}</td></tr>
+        <tr><th>Waktu</th><td>{{ input.waktu }}</td></tr>
+        <tr><th>Durasi</th><td>{{ input.durasi }}</td></tr>
+        <tr><th>Paket</th><td>{{ input.paket }}</td></tr>
     </table>
+</div>
 
-    <!-- TETANGGA TERDEKAT -->
-    <div class="section-title">3 Data Latih Terdekat</div>
+<div class="card">
+    <div class="card-header">{{ form.k.value|default:3 }} Data Latih Terdekat</div>
     <table>
         <thead>
             <tr>
-                <th>No</th>
+                <th style="width:5%">No</th>
                 <th>Nama</th>
                 <th>Status</th>
                 <th>Jarak</th>
@@ -95,7 +91,7 @@
         <tbody>
             {% for t in tetangga_terdekat %}
             <tr>
-                <td>{{ forloop.counter }}</td>
+                <td style="text-align:center">{{ forloop.counter }}</td>
                 <td>{{ t.nama }}</td>
                 <td>{{ t.status }}</td>
                 <td>{{ t.jarak }}</td>
@@ -103,11 +99,11 @@
             {% endfor %}
         </tbody>
     </table>
+</div>
 
-    <!-- FOOTER -->
-    <div class="footer">
-        Dicetak pada: {{ now|date:"d M Y, H:i" }}
-    </div>
+<div class="footer">
+    Dicetak pada: {{ now|date:"d M Y, H:i" }}
+</div>
 
 </body>
 </html>

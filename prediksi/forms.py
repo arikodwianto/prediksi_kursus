@@ -42,13 +42,27 @@ class DataLatihForm(forms.ModelForm):
 from django import forms
 from .models import DataUji
 
+from django import forms
+from .models import DataUji
+
 class DataUjiForm(forms.ModelForm):
+    DURASI_CHOICES = [
+        (1, '1 Jam'),
+        (2, '2 Jam'),
+        (3, '3 Jam'),
+    ]
+
     k = forms.IntegerField(
         min_value=1,
         max_value=20,
         initial=3,
         help_text="Masukkan nilai k (jumlah tetangga terdekat)",
         widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )
+
+    durasi = forms.ChoiceField(
+        choices=DURASI_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
     )
 
     class Meta:
@@ -58,6 +72,5 @@ class DataUjiForm(forms.ModelForm):
             'nama': forms.TextInput(attrs={'class': 'form-control'}),
             'hari': forms.Select(attrs={'class': 'form-control'}),
             'waktu': forms.Select(attrs={'class': 'form-control'}),
-            'durasi': forms.NumberInput(attrs={'class': 'form-control'}),
             'paket': forms.Select(attrs={'class': 'form-control'}),
         }
