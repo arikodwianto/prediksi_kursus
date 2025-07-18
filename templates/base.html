@@ -97,49 +97,81 @@
 </head>
 
 <body id="page-top">
+    
     <div id="wrapper">
+      
+
 <!-- Start Sidebar -->
 <ul class="navbar-nav sidebar sidebar-light accordion" id="accordionSidebar">
   <!-- Logo -->
-  <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
+  <a class="sidebar-brand d-flex align-items-center justify-content-center" href="dashboard">
       <div class="sidebar-brand-icon">
           <img src="{% static 'assets/images/sprites/3.jpg' %}">
       </div>
       <div class="sidebar-brand-text mx-3">Sumber Rezeki</div>
   </a>
+  
 
   <hr class="sidebar-divider my-0">
 
   <!-- Dashboard -->
-  <li class="nav-item active">
-      <a class="nav-link" href="{% url 'dashboard' %}">
-          <i class="fas fa-home" style="color: gray;"></i>
-          <span>Dashboard</span>
-      </a>
-  </li>
+<li class="nav-item active">
+    <a class="nav-link" href="{% url 'dashboard' %}">
+        <i class="fas fa-home" style="color: gray;"></i>
+        <span>Dashboard</span>
+    </a>
+</li>
 
-  <hr class="sidebar-divider">
+<hr class="sidebar-divider" style="border-top: 1px solid #666;">
 
-  <!-- Section: Data dan Informasi Kegiatan -->
-  <div class="sidebar-heading">Interface</div>
-  <li class="nav-item">
-      <a class="nav-link" href="{% url 'prediksi' %}">
-          <i class="fas fa-calculator" style="color: gray;"></i>
-          <span>Data Uji</span>
+
+
+<!-- Section: Data dan Informasi Kegiatan -->
+<div class="sidebar-heading">Interface</div>
+
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'tambah_data_uji' %}">
+        <i class="fas fa-vial" style="color: gray;"></i> <!-- Ikon eksperimen/tes -->
+        <span>Data Uji</span>
+    </a>
+</li>
+
+<hr class="sidebar-divider" style="border-top: 1px solid #666;">
+
+<div class="sidebar-heading">Data Latih</div>
+<li class="nav-item">
+  <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseDPA"
+    aria-expanded="true" aria-controls="collapseDPA">
+    <i class="fas fa-poll" style="color: gray;"></i>
+    <span>Daftar Data Latih</span>
+  </a>
+  <div id="collapseDPA" class="collapse" aria-labelledby="headingDPA" data-parent="#accordionSidebar">
+    <div class="bg-white py-2 collapse-inner rounded">
+      <h6 class="collapse-header">Data Set</h6>
+      <a class="collapse-item" href="{% url 'data_latih' %}">
+        <i class="fas fa-database" style="color: gray;"></i> Data Set
       </a>
-  </li>
-    <li class="nav-item">
-      <a class="nav-link" href="{% url 'data_latih' %}">
-          <i class="fas fa-calculator" style="color: gray;"></i>
-          <span>Data set</span>
+      <h6 class="collapse-header">Data Kriteria</h6>
+      <a class="collapse-item" href="{% url 'tambah_kriteria' %}">
+         <i class="fas fa-list-alt" style="color: gray;"></i> Data Kriteria
       </a>
-  </li>
-   <li class="nav-item">
-      <a class="nav-link" href="{% url 'riwayat_prediksi' %}">
-          <i class="fas fa-calculator" style="color: gray;"></i>
-          <span>Data Historis Prediksi</span>
+      <h6 class="collapse-header">Data Sub Kriteria</h6>
+      <a class="collapse-item" href="{% url 'tambah_pilihan_kriteria' %}">
+        <i class="fas fa-check-square" style="color: gray;"></i> Data Sub Kriteria
       </a>
-  </li>
+      
+    </div>
+ </li>
+
+ <hr class="sidebar-divider" style="border-top: 1px solid #666;">
+<div class="sidebar-heading">Laporan History</div>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'riwayat_prediksi' %}">
+        <i class="fas fa-history" style="color: gray;"></i> <!-- Ikon histori -->
+        <span>Data Historis Prediksi</span>
+    </a>
+</li>
+
 
   
 
@@ -196,13 +228,42 @@
                         </li>
                     </ul>
                 </nav>
+     
                 <!-- Topbar -->
-                <div class="main-panel">
-                    <div class="content-wrapper">
-                        {% block content %}
-                        {% endblock content %}
-                    </div>
-                </div>
+    <div class="main-panel">
+          <div class="content-wrapper">
+           {% if messages %}
+  <div class="container mt-2">
+    {% for message in messages %}
+      {% if message.tags == 'success' %}
+        <div class="alert alert-dismissible fade show" role="alert"
+             style="background-color: #157347; color: white;">
+          {{ message }}
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% elif message.tags == 'error' or message.tags == 'danger' %}
+        <div class="alert alert-dismissible fade show" role="alert"
+             style="background-color: #842029; color: white;">
+          {{ message }}
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% else %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endif %}
+
+
+    
+    {% block content %}
+    {% endblock content %}
+  </div>
+</div>
+
                 <!-- Container Fluid-->
           
             <!-- Footer -->
@@ -258,6 +319,15 @@
     <script src="{% static 'vendor2/datatables/dataTables.bootstrap4.min.js' %}"></script>
    
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+
+<!-- DataTables JS dan jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
 
     <!-- Page level custom scripts -->
     <script>

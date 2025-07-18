@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.humanize',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -126,6 +127,7 @@ LOGIN_URL = '/login/'
 
 # Tambahkan ini jika belum ada:
 import os
+
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 

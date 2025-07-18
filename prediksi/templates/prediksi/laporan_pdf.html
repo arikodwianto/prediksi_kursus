@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Laporan Hasil Prediksi</title>
+    <style>
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 12px;
+            margin: 30px;
+        }
+        .kop-surat {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .judul {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #444;
+            padding: 6px;
+            text-align: left;
+        }
+        .info {
+            margin-top: 10px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .header img {
+            height: 90px;
+        }
+        .header-text {
+            flex: 1;
+            text-align: center;
+        }
+        .header-text div {
+            font-size: 12px;
+        }
+        .header-text .title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .ttd {
+            margin-top: 40px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Kop Surat -->
+    <div class="header">
+        <div>
+            <img src="assets/images/sprites/3.jpg" alt="Logo">
+        </div>
+        <div class="header-text">
+            <div class="title">LAPORAN HASIL PENDAFTARAN KURSUS MOBIL</div>
+            <div>Jl. Ir Sutami No.5a/Tanjakan Perla KM.4</div>
+            <div>Email: lpkssumberrezeki@gmail.com</div>
+            <div>081275009199</div>
+        </div>
+    </div>
+
+    <!-- Informasi Peserta -->
+    <p><strong>Nama:</strong> {{ uji.nama }}</p>
+    <p><strong>Hasil Prediksi:</strong> {{ uji.hasil_prediksi }}</p>
+
+    <!-- Tabel Kriteria -->
+    <div class="info">
+        <h4>Kriteria yang Diinput:</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Kriteria</th>
+                    <th>Nilai Pilihan</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for nilai in nilai_kriteria %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ nilai.kriteria.nama }}</td>
+                    <td>{{ nilai.pilihan.label }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Tanda Tangan -->
+    <div class="ttd">
+        Tanjungpinang, {{ uji.created_at|date:"d M Y" }}<br><br><br>
+        <strong>Admin</strong>
+    </div>
+
+</body>
+</html>

@@ -3,57 +3,63 @@
 {% block content %}
 <div class="container mt-4">
 
-    <!-- Card Tambah Data -->
-  
-
-    <!-- Tombol Tambah Manual -->
-    <a href="{% url 'tambah_data_latih' %}" class="btn btn-success mb-3">
-        <i class="fas fa-plus"></i> Tambah Data 
-    </a>
-
-    <!-- Card Data Latih -->
-    <div class="card shadow-sm">
+    <!-- Card Form Tambah Kriteria -->
+    <div class="card mb-4 shadow-sm">
         <div class="card-header bg-primary text-white">
-            <h6 class="m-0 font-weight-bold">Data Latih</h6>
+            <h5 class="mb-0">Tambah Kriteria</h5>
         </div>
         <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label fw-bold">{{ form.nama.label }}</label>
+                    {{ form.nama }}
+                    {% if form.nama.errors %}
+                        <div class="text-danger small">{{ form.nama.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Simpan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Card Daftar Kriteria -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-white">
+            <h6 class="mb-0">Daftar Kriteria</h6>
+        </div>
+        <div class="card-body p-0">
             <div class="table-responsive">
                 <table id="dataLatihTable" class="table table-striped table-bordered mb-0">
-                    <thead>
+                    <thead class="table-light">
                         <tr>
-                            <th>No</th>
-                            <th>Nama</th>
-                            <th>Status</th>
-                            {% for kriteria in kriteria_list %}
-                                <th>{{ kriteria.nama }}</th>
-                            {% endfor %}
-                            <th>Aksi</th>
+                            <th style="width: 10%;">No</th>
+                            <th>Nama Kriteria</th>
+                            <th style="width: 20%;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for item in data %}
+                        {% for k in kriteria_list %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
-                            <td>{{ item.nama }}</td>
-                            <td>{{ item.status }}</td>
-                            {% for kriteria in kriteria_list %}
-                                <td>
-                                    {% for nilai in item.nilai_kriteria.all %}
-                                        {% if nilai.kriteria.id == kriteria.id %}
-                                            {{ nilai.pilihan.label }}
-                                        {% endif %}
-                                    {% endfor %}
-                                </td>
-                            {% endfor %}
+                            <td>{{ k.nama }}</td>
                             <td>
-                                <a href="{% url 'edit_data_latih' item.id %}" class="btn btn-sm btn-warning">Edit</a>
-                                <a href="{% url 'hapus_data_latih' item.id %}" class="btn btn-sm btn-danger"
-                                   onclick="return confirm('Yakin ingin menghapus data ini?')">Hapus</a>
+                                <a href="{% url 'edit_kriteria' k.id %}" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <a href="{% url 'hapus_kriteria' k.id %}" class="btn btn-sm btn-danger"
+                                   onclick="return confirm('Yakin ingin menghapus kriteria ini?')">
+                                   <i class="fas fa-trash"></i> Hapus
+                                </a>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="{{ kriteria_list|length|add:'4' }}" class="text-center">Data tidak tersedia.</td>
+                            <td colspan="3" class="text-center">Belum ada data kriteria.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -64,7 +70,6 @@
 
 </div>
 {% endblock %}
-
 {% block extra_js %}
 <!-- DataTables CSS -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">

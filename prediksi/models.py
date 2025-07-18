@@ -1,56 +1,59 @@
 from django.db import models
 
+# Kriteria seperti Hari, Waktu, Paket, dll
+class Kriteria(models.Model):
+    nama = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.nama
+
+# Pilihan untuk tiap kriteria, seperti Senin, Selasa, dst
+class PilihanKriteria(models.Model):
+    kriteria = models.ForeignKey(Kriteria, on_delete=models.CASCADE, related_name='pilihan')
+    nilai = models.IntegerField()  # nilai numerik
+    label = models.CharField(max_length=100)  # label ditampilkan ke user
+
+    def __str__(self):
+        return f"{self.kriteria.nama} - {self.label}"
+
+# Data Latih (inputan utama)
 class DataLatih(models.Model):
-    HARI_CHOICES = [
-        (1, 'Senin'),
-        (2, 'Selasa'),
-        (3, 'Rabu'),
-        (4, 'Kamis'),
-        (5, 'Jumat'),
-        (6, 'Sabtu'),
-        
-    ]
-
-    WAKTU_CHOICES = [
-        (1, 'Pagi'),
-        (2, 'Siang'),
-        (3, 'Sore'),
-    ]
-
-    PAKET_CHOICES = [
-        (0, 'Harian + SIM'),
-        (1, 'Harian Tanpa SIM'),
-        (2, 'Mingguan + SIM'),
-        (3, 'Mingguan Tanpa SIM'),
-    ]
-
     STATUS_CHOICES = [
         ('Bisa', 'Bisa'),
         ('Tidak Bisa', 'Tidak Bisa'),
     ]
 
     nama = models.CharField(max_length=100)
-    hari = models.IntegerField(choices=HARI_CHOICES)
-    waktu = models.IntegerField(choices=WAKTU_CHOICES)
-    durasi = models.IntegerField()
-    paket = models.IntegerField(choices=PAKET_CHOICES)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
 
     def __str__(self):
         return f"{self.nama} - {self.status}"
 
-
-class DataUji(models.Model):
-    HARI_CHOICES = DataLatih.HARI_CHOICES
-    WAKTU_CHOICES = DataLatih.WAKTU_CHOICES
-    PAKET_CHOICES = DataLatih.PAKET_CHOICES
-
-    nama = models.CharField(max_length=100)
-    hari = models.IntegerField(choices=HARI_CHOICES)
-    waktu = models.IntegerField(choices=WAKTU_CHOICES)
-    durasi = models.IntegerField()
-    paket = models.IntegerField(choices=PAKET_CHOICES)
-    hasil_prediksi = models.CharField(max_length=20, blank=True, null=True)
+# Nilai setiap kriteria untuk setiap DataLatih
+class NilaiKriteriaLatih(models.Model):
+    data_latih = models.ForeignKey(DataLatih, on_delete=models.CASCADE, related_name='nilai_kriteria')
+    kriteria = models.ForeignKey(Kriteria, on_delete=models.CASCADE)
+    pilihan = models.ForeignKey(PilihanKriteria, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
-        return f"{self.nama} - {self.hasil_prediksi or 'Belum Diprediksi'}"
+        return f"{self.data_latih.nama} - {self.kriteria.nama} = {self.pilihan.label}"
+
+
+from django.db import models
+from .models import Kriteria, PilihanKriteria  # kalau dalam file sama, ini tidak perlu
+
+class DataUji(models.Model):
+    nama = models.CharField(max_length=255)
+    hasil_prediksi = models.CharField(max_length=100, null=True, blank=True)
+
+    def __str__(self):
+        return self.nama
+
+
+class NilaiKriteriaUji(models.Model):
+    data_uji = models.ForeignKey(DataUji, related_name='nilai_kriteria', on_delete=models.CASCADE)
+    kriteria = models.ForeignKey(Kriteria, on_delete=models.CASCADE)
+    pilihan = models.ForeignKey(PilihanKriteria, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.data_uji.nama} - {self.kriteria.nama}: {self.pilihan.label}"

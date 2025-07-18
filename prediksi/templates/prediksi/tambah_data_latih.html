@@ -1,12 +1,62 @@
 {% extends 'base.html' %}
-{% load static %}
+
 {% block content %}
+<div class="card mt-4">
+    <div class="card-header bg-secondary text-white">Import Data Latih dari CSV</div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <input type="file" name="csv_file" accept=".csv" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-warning">Upload CSV</button>
+        </form>
+    </div>
+</div>
+
 <div class="container mt-4">
-    <h3>Tambah Data Latih Manual</h3>
-    <form method="post">
+    
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Tambah Data Latih</h5>
+        </div>
+        
+        <div class="card-body">
+            <form method="post" class="card p-4 shadow-sm">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-success">Simpan</button>
+        <div class="row g-3">
+            <!-- Field Nama -->
+            <div class="col-md-6">
+                <label for="{{ form.nama.id_for_label }}" class="form-label">{{ form.nama.label }}</label>
+                {{ form.nama }}
+            </div>
+
+            <!-- Field Status -->
+            <div class="col-md-6">
+                <label for="{{ form.status.id_for_label }}" class="form-label">{{ form.status.label }}</label>
+                {{ form.status }}
+            </div>
+
+            <!-- Field Dinamis (Kriteria) -->
+            {% for field in form %}
+                {% if "kriteria_" in field.name %}
+                    <div class="col-md-6">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="text-danger small">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Simpan</button>
+            <a href="{% url 'riwayat_prediksi' %}" class="btn btn-secondary">Kembali</a>
+        </div>
     </form>
+        </div>
+    </div>
 </div>
 {% endblock %}

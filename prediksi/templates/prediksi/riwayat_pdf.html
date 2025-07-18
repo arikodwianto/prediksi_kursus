@@ -1,12 +1,23 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <style>
-        body {
+        @page {
+            size: A4 landscape;
+            margin: 5mm;
+        }
+
+        html, body {
             font-family: DejaVu Sans, sans-serif;
             font-size: 12px;
-            margin: 40px;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            padding: 20mm;
         }
 
         .header {
@@ -15,7 +26,7 @@
         }
 
         .header img {
-            height: 20px;
+            height: 60px;
         }
 
         .title {
@@ -33,46 +44,56 @@
             text-align: right;
         }
 
+        .section-title {
+            font-weight: bold;
+            margin-top: 30px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
             table-layout: fixed;
-            word-wrap: break-word;
         }
 
         th, td {
             border: 1px solid #000;
             padding: 6px;
             font-size: 11px;
-            text-align: center;
+            vertical-align: top;
+            word-wrap: break-word;
         }
 
         th {
             background-color: #f2f2f2;
+            text-align: center;
         }
 
         .text-left {
             text-align: left;
         }
 
-        .section-title {
-            font-weight: bold;
-            margin-top: 30px;
+        .justify {
+            text-align: justify;
+            white-space: pre-wrap;
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <img src="https://i.imgur.com/T1P5GZg.png" alt="Logo" />
-        <div class="title">Laporan Hasil Pendaftaran Kursus Mobil</div>
-        <div class="contact">
-            Jl. Ir Sutami No.5a/Tanjakan Perla KM.4<br>
-            Email : lpkssumberrezeki@gmail.com<br>
-            081275009199
-        </div>
+    <div class="header" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+    <div style="flex: 0 0 auto;">
+        <img src="assets/images/sprites/3.jpg"  style="height: 90px;">
     </div>
+    <div style="text-align: center; flex: 1;">
+        <div style="font-size: 16px; font-weight: bold;">LAPORAN HASIL PENDAFTARAN KURSUS MOBIL</div>
+        <div style="font-size: 12px;">Jl. Ir Sutami No.5a/Tanjakan Perla KM.4</div>
+        <div style="font-size: 12px;">Email: lpkssumberrezeki@gmail.com</div>
+        <div style="font-size: 12px;">081275009199</div>
+    </div>
+</div>
+<hr style="margin: 10px 0;">
+
 
     <div class="info">
         Tanggal cetak: {{ tanggal_cetak|date:"d M Y" }}<br>
@@ -84,13 +105,13 @@
     <table>
         <thead>
             <tr>
-                <th style="width: 5%;">No</th>
-                <th style="width: 20%;">Nama</th>
-                <th style="width: 15%;">No Telepon</th>
-                <th style="width: 15%;">Tanggal Mulai</th>
-                <th style="width: 15%;">Tanggal Selesai</th>
-                <th style="width: 15%;">Tingkat Akurasi</th>
-                <th style="width: 15%;">Status</th>
+                <th>No</th>
+                <th>Nama</th>
+                <th>No Telepon</th>
+                <th>Tanggal Mulai</th>
+                <th>Tanggal Selesai</th>
+                <th>Tingkat Akurasi</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
@@ -98,12 +119,18 @@
                 {% for d in data %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
-                    <td>{{ d.nama }}</td>
+                    <td class="text-left">{{ d.nama }}</td>
                     <td>{{ d.no_telepon }}</td>
                     <td>{{ d.tanggal_mulai|date:"d M Y" }}</td>
                     <td>{{ d.tanggal_selesai|date:"d M Y" }}</td>
                     <td>{{ d.tingkat_akurasi }}%</td>
-                    <td>{{ d.status }}</td>
+                    <td class="justify">
+                        {% if d.status %}
+                            {{ d.status }}
+                        {% else %}
+                            Tidak ada keterangan status.
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             {% else %}

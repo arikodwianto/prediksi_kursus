@@ -1,83 +1,76 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2>Riwayat Hasil Prediksi</h2>
-    <a href="{% url 'cetak_riwayat_pdf' %}" class="btn btn-danger mb-3">
-        <i class="bi bi-printer"></i> Cetak PDF
-    </a>
+<div class="container mt-5">
+    <h3>Riwayat Hasil Prediksi</h3>
+<a href="{% url 'cetak_pdf_riwayat_prediksi' %}" class="btn btn-success mb-3" target="_blank">
+    Cetak Seluruh Riwayat PDF
+</a>
 
     {% if data %}
-    <div class="card">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Tabel Riwayat Prediksi</h6>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table id="riwayatTable" class="table table-bordered" width="100%" cellspacing="0">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>No</th>
-                            <th>Nama</th>
-                            <th>Hari</th>
-                            <th>Waktu</th>
-                            <th>Durasi</th>
-                            <th>Paket</th>
-                            <th>Hasil Prediksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for row in data %}
-                        <tr>
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ row.nama }}</td>
-                            <td>{{ row.get_hari_display }}</td>
-                            <td>{{ row.get_waktu_display }}</td>
-                            <td>{{ row.durasi }}</td>
-                            <td>{{ row.get_paket_display }}</td>
-                            <td><strong>{{ row.hasil_prediksi }}</strong></td>
-                        </tr>
+    <table id="dataUjiTable" class="table table-bordered table-hover mt-4">
+        <thead class="table-dark">
+            <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th>Prediksi</th>
+                <th>Akurasi</th>
+                <th>Precision</th>
+                <th>Recall</th>
+                <th>Alasan</th>
+                <th>Tanggal</th>
+                <th>Kriteria</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for uji in data %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ uji.nama }}</td>
+                <td><strong>{{ uji.hasil_prediksi|default:"-" }}</strong></td>
+                <td>
+  {% if uji.akurasi %}{{ uji.akurasi|floatformat:2 }}%{% else %}-{% endif %}
+</td>
+<td>
+  {% if uji.precision %}{{ uji.precision|floatformat:2 }}%{% else %}-{% endif %}
+</td>
+<td>
+  {% if uji.recall %}{{ uji.recall|floatformat:2 }}%{% else %}-{% endif %}
+</td>
+
+                <td><small>{{ uji.alasan|default:"-" }}</small></td>
+                <td>{{ uji.created_at|date:"d M Y, H:i" }}</td>
+                <td>
+                    <ul class="mb-0 ps-3">
+                        {% for nilai in uji.nilai_kriteria.all %}
+                            <li>{{ nilai.kriteria.nama }}: {{ nilai.pilihan.label }}</li>
                         {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+                    </ul>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
     {% else %}
-    <div class="alert alert-info mt-3">Belum ada data prediksi yang disimpan.</div>
+    <div class="alert alert-info mt-4">Belum ada data uji yang tersimpan.</div>
     {% endif %}
 </div>
 {% endblock %}
 
 {% block extra_js %}
-<!-- DataTables CSS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
-<!-- jQuery (wajib duluan) -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- DataTables JS -->
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<!-- DataTables CSS & JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
-$(document).ready(function () {
-    $('#riwayatTable').DataTable({
-        "lengthMenu": [5, 10, 25, 50, 100],
-        "pageLength": 10,
-        "language": {
-            "lengthMenu": "Tampilkan _MENU_ data per halaman",
-            "zeroRecords": "Tidak ada data ditemukan",
-            "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-            "infoEmpty": "Tidak ada data tersedia",
-            "infoFiltered": "(disaring dari total _MAX_ data)",
-            "search": "Cari:",
-            "paginate": {
-                "first": "Pertama",
-                "last": "Terakhir",
-                "next": "Berikutnya",
-                "previous": "Sebelumnya"
+    $(document).ready(function() {
+        $('#dataUjiTable').DataTable({
+            responsive: true,
+            language: {
+                url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json"
             }
-        }
+        });
     });
-});
 </script>
 {% endblock %}

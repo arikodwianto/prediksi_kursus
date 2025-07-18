@@ -1,5 +1,5 @@
 from django import forms
-from .models import DataLatih, DataUji
+from .models import DataLatih
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
@@ -26,51 +26,70 @@ class LoginForm(AuthenticationForm):
     password = forms.CharField(widget=forms.PasswordInput, label='Password')
 
 
-class DataLatihForm(forms.ModelForm):
+from django import forms
+from .models import DataLatih, Kriteria, PilihanKriteria
+
+# Form tambah data latih otomatis berdasarkan kriteria
+class DynamicDataLatihForm(forms.ModelForm):
     class Meta:
         model = DataLatih
-        fields = ['nama', 'hari', 'waktu', 'durasi', 'paket', 'status']
-        widgets = {
-            'nama': forms.TextInput(attrs={'class': 'form-control'}),
-            'hari': forms.Select(attrs={'class': 'form-control'}),
-            'waktu': forms.Select(attrs={'class': 'form-control'}),
-            'durasi': forms.NumberInput(attrs={'class': 'form-control'}),
-            'paket': forms.Select(attrs={'class': 'form-control'}),
-            'status': forms.Select(attrs={'class': 'form-control'}),
-        }
+        fields = ['nama', 'status']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for kriteria in Kriteria.objects.all():
+            pilihan = PilihanKriteria.objects.filter(kriteria=kriteria)
+            self.fields[f'kriteria_{kriteria.id}'] = forms.ChoiceField(
+                label=kriteria.nama,
+                choices=[(p.id, p.label) for p in pilihan],
+                widget=forms.Select(attrs={'class': 'form-control'}),
+                required=True
+            )
+
+
+
+
+# Tambah kriteria baru
+class KriteriaForm(forms.ModelForm):
+    class Meta:
+        model = Kriteria
+        fields = ['nama']
+
+
+# Tambah pilihan kriteria
+class PilihanKriteriaForm(forms.ModelForm):
+    class Meta:
+        model = PilihanKriteria
+        fields = ['kriteria', 'nilai', 'label']
 
 from django import forms
-from .models import DataUji
+from .models import DataUji, Kriteria, PilihanKriteria
 
 from django import forms
-from .models import DataUji
+from .models import DataUji, Kriteria, PilihanKriteria
 
-class DataUjiForm(forms.ModelForm):
-    DURASI_CHOICES = [
-        (1, '1 Jam'),
-        (2, '2 Jam'),
-        (3, '3 Jam'),
-    ]
-
-    k = forms.IntegerField(
-        min_value=1,
-        max_value=20,
-        initial=3,
-        help_text="Masukkan nilai k (jumlah tetangga terdekat)",
-        widget=forms.NumberInput(attrs={'class': 'form-control'})
-    )
-
-    durasi = forms.ChoiceField(
-        choices=DURASI_CHOICES,
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
+class DynamicDataUjiForm(forms.ModelForm):
+    k = forms.IntegerField(label='Nilai K', min_value=1)
 
     class Meta:
         model = DataUji
-        fields = ['nama', 'hari', 'waktu', 'durasi', 'paket', 'k']
-        widgets = {
-            'nama': forms.TextInput(attrs={'class': 'form-control'}),
-            'hari': forms.Select(attrs={'class': 'form-control'}),
-            'waktu': forms.Select(attrs={'class': 'form-control'}),
-            'paket': forms.Select(attrs={'class': 'form-control'}),
-        }
+        fields = ['nama']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Styling Bootstrap untuk field yang ada
+        self.fields['nama'].widget.attrs.update({'class': 'form-control'})
+        self.fields['k'].widget.attrs.update({'class': 'form-control'})
+
+        # Tambahkan field dinamis untuk setiap kriteria
+        for kriteria in Kriteria.objects.all():
+            field_name = f'kriteria_{kriteria.id}'
+            self.fields[field_name] = forms.ModelChoiceField(
+                label=kriteria.nama,
+                queryset=PilihanKriteria.objects.filter(kriteria=kriteria),
+                required=True,
+                widget=forms.Select(attrs={'class': 'form-select'})
+            )
+
