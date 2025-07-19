@@ -81,12 +81,13 @@
 </head>
 <body>
 
-    <div class="header" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+<div class="header" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
     <div style="flex: 0 0 auto;">
-        <img src="assets/images/sprites/3.jpg"  style="height: 90px;">
+       <img src="{% static 'img/logo.png' %}" width="100">
+
     </div>
     <div style="text-align: center; flex: 1;">
-        <div style="font-size: 16px; font-weight: bold;">LAPORAN HASIL PENDAFTARAN KURSUS MOBIL</div>
+        <div style="font-size: 16px; font-weight: bold;">LAPORAN HASIL PREDIKSI PENDAFTARAN KURSUS MOBIL</div>
         <div style="font-size: 12px;">Jl. Ir Sutami No.5a/Tanjakan Perla KM.4</div>
         <div style="font-size: 12px;">Email: lpkssumberrezeki@gmail.com</div>
         <div style="font-size: 12px;">081275009199</div>
@@ -94,52 +95,53 @@
 </div>
 <hr style="margin: 10px 0;">
 
+<div class="info">
+    Tanggal cetak: {{ tanggal_cetak|date:"d M Y" }}<br>
+    Periode laporan: {{ periode_laporan }}
+</div>
 
-    <div class="info">
-        Tanggal cetak: {{ tanggal_cetak|date:"d M Y" }}<br>
-        Periode laporan: {{ periode_laporan }}
-    </div>
+<div class="section-title">Riwayat Hasil Prediksi</div>
 
-    <div class="section-title">Informasi Jadwal Kursus Mobil</div>
-
-    <table>
-        <thead>
+<table>
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Nama</th>
+            <th>Prediksi</th>
+            <th>Akurasi</th>
+            <th>Precision</th>
+            <th>Recall</th>
+            <th>Alasan</th>
+            <th>Tanggal</th>
+            <th>Kriteria</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if data %}
+            {% for uji in data %}
             <tr>
-                <th>No</th>
-                <th>Nama</th>
-                <th>No Telepon</th>
-                <th>Tanggal Mulai</th>
-                <th>Tanggal Selesai</th>
-                <th>Tingkat Akurasi</th>
-                <th>Status</th>
+                <td>{{ forloop.counter }}</td>
+                <td class="text-left">{{ uji.nama }}</td>
+                <td>{{ uji.hasil_prediksi|default:"-" }}</td>
+                <td>{% if uji.akurasi %}{{ uji.akurasi|floatformat:2 }}%{% else %}-{% endif %}</td>
+                <td>{% if uji.precision %}{{ uji.precision|floatformat:2 }}%{% else %}-{% endif %}</td>
+                <td>{% if uji.recall %}{{ uji.recall|floatformat:2 }}%{% else %}-{% endif %}</td>
+                <td class="justify">{{ uji.alasan|default:"-" }}</td>
+                <td>{{ uji.created_at|date:"d M Y, H:i" }}</td>
+                <td class="text-left">
+                    {% for nilai in uji.nilai_kriteria.all %}
+                        • {{ nilai.kriteria.nama }}: {{ nilai.pilihan.label }}<br>
+                    {% endfor %}
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            {% if data %}
-                {% for d in data %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td class="text-left">{{ d.nama }}</td>
-                    <td>{{ d.no_telepon }}</td>
-                    <td>{{ d.tanggal_mulai|date:"d M Y" }}</td>
-                    <td>{{ d.tanggal_selesai|date:"d M Y" }}</td>
-                    <td>{{ d.tingkat_akurasi }}%</td>
-                    <td class="justify">
-                        {% if d.status %}
-                            {{ d.status }}
-                        {% else %}
-                            Tidak ada keterangan status.
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            {% else %}
-                <tr>
-                    <td colspan="7">Belum ada data pendaftaran kursus mobil</td>
-                </tr>
-            {% endif %}
-        </tbody>
-    </table>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="9">Belum ada data riwayat prediksi yang tersimpan.</td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
 
 </body>
 </html>

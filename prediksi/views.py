@@ -265,7 +265,12 @@ def tambah_data_uji(request):
                     alasan = "Data latih kurang dari 5, prediksi dilakukan tanpa validasi silang."
 
                 uji.hasil_prediksi = pred
+                uji.akurasi = akurasi
+                uji.precision = precision
+                uji.recall = recall
+                uji.alasan = alasan
                 uji.save()
+
                 hasil_prediksi = pred
                 messages.success(request, f"Prediksi berhasil dilakukan. Hasil: {pred}")
 
@@ -691,10 +696,12 @@ def edit_pilihan_kriteria_view(request, pilihan_id):
 
 @login_required
 def hapus_pilihan_kriteria_view(request, pilihan_id):
-    pilihan = get_object_or_404(PilihanKriteria, id=pilihan_id)
-    pilihan.delete()
-    messages.success(request, "Pilihan kriteria berhasil dihapus.")
+    if request.method == 'POST':
+        pilihan = get_object_or_404(PilihanKriteria, id=pilihan_id)
+        pilihan.delete()
+        messages.success(request, "Pilihan kriteria berhasil dihapus.")
     return redirect('tambah_pilihan_kriteria')
+
 
  
 
@@ -704,8 +711,13 @@ from django.shortcuts import render
 
 @login_required
 def riwayat_prediksi_view(request):
-    data = DataUji.objects.all().order_by('-id')  # urut dari terbaru
+    data = DataUji.objects.prefetch_related(
+        'nilai_kriteria__kriteria',
+        'nilai_kriteria__pilihan'
+    ).order_by('-id')
+    
     return render(request, 'prediksi/riwayat_prediksi.html', {'data': data})
+
 
 from django.utils.timezone import now
 from django.http import HttpResponse
@@ -727,22 +739,43 @@ from weasyprint import HTML
 from django.conf import settings
 import os
 
+from django.conf import settings
+from django.http import HttpResponse
+from django.template.loader import get_template
+from weasyprint import HTML
+from django.utils.timezone import now
+import os
+from django.contrib.auth.decorators import login_required
+from prediksi.models import DataUji  # sesuaikan dengan nama aplikasimu
+
 @login_required
 def cetak_pdf_riwayat_prediksi(request):
+    from django.conf import settings
+    from django.utils.timezone import now
+    from django.template.loader import get_template
+    from weasyprint import HTML
+
     data = DataUji.objects.all().order_by('-id')
     template = get_template('prediksi/riwayat_pdf.html')
     html_string = template.render({'data': data, 'tanggal_cetak': now()})
 
-    # base path ke folder static
-    base_url = settings.STATIC_ROOT
-    if not base_url:
-        base_url = os.path.join(settings.BASE_DIR, 'static')  # fallback jika STATIC_ROOT None
+    # Tentukan base_url ke folder 'static'
+    base_url = None
+    if settings.DEBUG:
+        # Saat development
+        base_url = settings.STATICFILES_DIRS[0] if settings.STATICFILES_DIRS else os.path.join(settings.BASE_DIR, 'static')
+    else:
+        # Saat production, gunakan STATIC_ROOT
+        base_url = settings.STATIC_ROOT
 
+    # Cetak PDF
     pdf_file = HTML(string=html_string, base_url=base_url).write_pdf()
 
     response = HttpResponse(pdf_file, content_type='application/pdf')
     response['Content-Disposition'] = 'inline; filename="riwayat_prediksi.pdf"'
     return response
+
+
 
 
 

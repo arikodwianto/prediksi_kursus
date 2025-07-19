@@ -104,7 +104,7 @@
 <!-- Start Sidebar -->
 <ul class="navbar-nav sidebar sidebar-light accordion" id="accordionSidebar">
   <!-- Logo -->
-  <a class="sidebar-brand d-flex align-items-center justify-content-center" href="dashboard">
+  <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'dashboard' %}">
       <div class="sidebar-brand-icon">
           <img src="{% static 'assets/images/sprites/3.jpg' %}">
       </div>
@@ -123,21 +123,6 @@
 </li>
 
 <hr class="sidebar-divider" style="border-top: 1px solid #666;">
-
-
-
-<!-- Section: Data dan Informasi Kegiatan -->
-<div class="sidebar-heading">Interface</div>
-
-<li class="nav-item">
-    <a class="nav-link" href="{% url 'tambah_data_uji' %}">
-        <i class="fas fa-vial" style="color: gray;"></i> <!-- Ikon eksperimen/tes -->
-        <span>Data Uji</span>
-    </a>
-</li>
-
-<hr class="sidebar-divider" style="border-top: 1px solid #666;">
-
 <div class="sidebar-heading">Data Latih</div>
 <li class="nav-item">
   <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseDPA"
@@ -162,6 +147,21 @@
       
     </div>
  </li>
+<hr class="sidebar-divider" style="border-top: 1px solid #666;">
+
+<!-- Section: Data dan Informasi Kegiatan -->
+<div class="sidebar-heading">Cek Data Uji</div>
+
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'tambah_data_uji' %}">
+        <i class="fas fa-vial" style="color: gray;"></i> <!-- Ikon eksperimen/tes -->
+        <span>Data Uji</span>
+    </a>
+</li>
+
+
+
+
 
  <hr class="sidebar-divider" style="border-top: 1px solid #666;">
 <div class="sidebar-heading">Laporan History</div>

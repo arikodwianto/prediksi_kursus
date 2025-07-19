@@ -10,11 +10,19 @@ class Kriteria(models.Model):
 # Pilihan untuk tiap kriteria, seperti Senin, Selasa, dst
 class PilihanKriteria(models.Model):
     kriteria = models.ForeignKey(Kriteria, on_delete=models.CASCADE, related_name='pilihan')
-    nilai = models.IntegerField()  # nilai numerik
-    label = models.CharField(max_length=100)  # label ditampilkan ke user
+    nilai = models.IntegerField(blank=True, null=True)  # nilai boleh kosong saat input
+    label = models.CharField(max_length=100)
+
+    def save(self, *args, **kwargs):
+        if self.nilai is None:
+            # Ambil nilai tertinggi saat ini untuk kriteria yang sama
+            last = PilihanKriteria.objects.filter(kriteria=self.kriteria).order_by('-nilai').first()
+            self.nilai = 0 if last is None else last.nilai + 1
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.kriteria.nama} - {self.label}"
+
 
 # Data Latih (inputan utama)
 class DataLatih(models.Model):
@@ -45,6 +53,11 @@ from .models import Kriteria, PilihanKriteria  # kalau dalam file sama, ini tida
 class DataUji(models.Model):
     nama = models.CharField(max_length=255)
     hasil_prediksi = models.CharField(max_length=100, null=True, blank=True)
+    akurasi = models.FloatField(null=True, blank=True)       # ✅ ditambahkan
+    precision = models.FloatField(null=True, blank=True)     # ✅ ditambahkan
+    recall = models.FloatField(null=True, blank=True)        # ✅ ditambahkan
+    alasan = models.TextField(null=True, blank=True)         # (jika belum)
+    created_at = models.DateTimeField(auto_now_add=True)     # (opsional tapi sangat disarankan)
 
     def __str__(self):
         return self.nama

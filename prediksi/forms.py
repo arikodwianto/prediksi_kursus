@@ -61,7 +61,8 @@ class KriteriaForm(forms.ModelForm):
 class PilihanKriteriaForm(forms.ModelForm):
     class Meta:
         model = PilihanKriteria
-        fields = ['kriteria', 'nilai', 'label']
+        fields = ['kriteria', 'label']  # nilai tidak ditampilkan di form
+
 
 from django import forms
 from .models import DataUji, Kriteria, PilihanKriteria

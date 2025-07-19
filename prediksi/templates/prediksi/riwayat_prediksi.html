@@ -2,55 +2,52 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h3>Riwayat Hasil Prediksi</h3>
-<a href="{% url 'cetak_pdf_riwayat_prediksi' %}" class="btn btn-success mb-3" target="_blank">
-    Cetak Seluruh Riwayat PDF
-</a>
+    <h2 class="mb-4">Riwayat Hasil Prediksi Pendaftaran Kursus Mobil</h2>
+
+    <!-- Tombol Cetak -->
+    <a href="{% url 'cetak_pdf_riwayat_prediksi' %}" class="btn btn-success mb-3" target="_blank">
+        <i class="bi bi-printer"></i> Cetak Seluruh Riwayat PDF
+    </a>
 
     {% if data %}
-    <table id="dataUjiTable" class="table table-bordered table-hover mt-4">
-        <thead class="table-dark">
-            <tr>
-                <th>No</th>
-                <th>Nama</th>
-                <th>Prediksi</th>
-                <th>Akurasi</th>
-                <th>Precision</th>
-                <th>Recall</th>
-                <th>Alasan</th>
-                <th>Tanggal</th>
-                <th>Kriteria</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for uji in data %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ uji.nama }}</td>
-                <td><strong>{{ uji.hasil_prediksi|default:"-" }}</strong></td>
-                <td>
-  {% if uji.akurasi %}{{ uji.akurasi|floatformat:2 }}%{% else %}-{% endif %}
-</td>
-<td>
-  {% if uji.precision %}{{ uji.precision|floatformat:2 }}%{% else %}-{% endif %}
-</td>
-<td>
-  {% if uji.recall %}{{ uji.recall|floatformat:2 }}%{% else %}-{% endif %}
-</td>
-
-                <td><small>{{ uji.alasan|default:"-" }}</small></td>
-                <td>{{ uji.created_at|date:"d M Y, H:i" }}</td>
-                <td>
-                    <ul class="mb-0 ps-3">
-                        {% for nilai in uji.nilai_kriteria.all %}
+    <div class="table-responsive">
+        <table id="dataUjiTable" class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>Prediksi</th>
+                    <th>Akurasi</th>
+                    <th>Precision</th>
+                    <th>Recall</th>
+                    <th>Alasan</th>
+                    <th>Tanggal</th>
+                    <th>Kriteria</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for uji in data %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ uji.nama }}</td>
+                    <td><strong>{{ uji.hasil_prediksi|default:"-" }}</strong></td>
+                    <td>{% if uji.akurasi %}{{ uji.akurasi|floatformat:2 }}%{% else %}-{% endif %}</td>
+                    <td>{% if uji.precision %}{{ uji.precision|floatformat:2 }}%{% else %}-{% endif %}</td>
+                    <td>{% if uji.recall %}{{ uji.recall|floatformat:2 }}%{% else %}-{% endif %}</td>
+                    <td><small>{{ uji.alasan|default:"-" }}</small></td>
+                    <td>{{ uji.created_at|date:"d M Y, H:i" }}</td>
+                    <td>
+                        <ul class="mb-0 ps-3">
+                            {% for nilai in uji.nilai_kriteria.all %}
                             <li>{{ nilai.kriteria.nama }}: {{ nilai.pilihan.label }}</li>
-                        {% endfor %}
-                    </ul>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% else %}
     <div class="alert alert-info mt-4">Belum ada data uji yang tersimpan.</div>
     {% endif %}
