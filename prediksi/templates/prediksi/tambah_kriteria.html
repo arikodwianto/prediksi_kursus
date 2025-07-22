@@ -38,6 +38,7 @@
                     <thead class="table-light">
                         <tr>
                             <th style="width: 10%;">No</th>
+                            <th>Id Kriteria</th>
                             <th>Nama Kriteria</th>
                             <th style="width: 20%;">Aksi</th>
                         </tr>
@@ -45,7 +46,9 @@
                     <tbody>
                         {% for k in kriteria_list %}
                         <tr>
+                            
                             <td>{{ forloop.counter }}</td>
+                            <td>{{ k.id }}</td>
                             <td>{{ k.nama }}</td>
                             <td>
                                 <a href="{% url 'edit_kriteria' k.id %}" class="btn btn-sm btn-warning">
