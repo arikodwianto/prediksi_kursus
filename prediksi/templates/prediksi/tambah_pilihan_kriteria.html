@@ -70,13 +70,21 @@
                             <td>{{ pilihan.nilai }}</td>
                          
                             <td>
-                                <a href="{% url 'edit_pilihan_kriteria' pilihan.id %}" class="btn btn-sm btn-warning">
-                                    <i class="fas fa-edit"></i> Edit
-                                </a>
-                                <a href="{% url 'hapus_pilihan_kriteria' pilihan.id %}" class="btn btn-sm btn-danger"
-                                   onclick="return confirm('Yakin ingin menghapus pilihan ini?')">
-                                    <i class="fas fa-trash"></i> Hapus
-                                </a>
+                               <div class="d-flex gap-2">
+    <!-- Tombol Edit -->
+    <a href="{% url 'edit_pilihan_kriteria' pilihan.id %}" class="btn btn-sm btn-warning">
+        <i class="fas fa-edit"></i> Edit
+    </a>
+
+    <!-- Tombol Hapus -->
+    <form method="POST" action="{% url 'hapus_pilihan_kriteria' pilihan.id %}" onsubmit="return confirm('Yakin ingin menghapus?')">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-danger">
+            <i class="fas fa-trash-alt"></i> Hapus
+        </button>
+    </form>
+</div>
+
                             </td>
                         </tr>
                         {% empty %}
