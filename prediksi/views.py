@@ -18,6 +18,9 @@ import csv
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .forms import RegisterForm, LoginForm
+from django.contrib import messages
+
+
 
 def register_view(request):
     if request.method == 'POST':
@@ -28,6 +31,8 @@ def register_view(request):
             user.save()
             messages.success(request, 'Registrasi berhasil! Silakan login.')
             return redirect('login')
+        else:
+            messages.error(request, 'Registrasi gagal. Silakan periksa kembali formulir Anda.')
     else:
         form = RegisterForm()
 
@@ -43,7 +48,10 @@ def login_view(request):
         form = LoginForm(request, data=request.POST)
         if form.is_valid():
             login(request, form.get_user())
+            messages.success(request, 'Login berhasil! Selamat datang.')
             return redirect('dashboard')
+        else:
+            messages.error(request, 'Login gagal. Username atau password salah.')
     else:
         form = LoginForm()
 
@@ -54,9 +62,12 @@ def login_view(request):
     return render(request, 'auth/login.html', {'form': form})
 
 
+
 def logout_view(request):
     logout(request)
+    messages.info(request, 'Anda telah berhasil logout.')
     return redirect('login')
+
 
 
 
