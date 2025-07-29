@@ -1,101 +1,148 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <title>Laporan Hasil Prediksi</title>
     <style>
         body {
-            font-family: DejaVu Sans, sans-serif;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
             font-size: 12px;
-            margin: 30px;
+            margin: 40px 50px;
+            color: #000;
         }
+
         .kop-surat {
-            text-align: center;
-            border-bottom: 2px solid #000;
+            display: flex;
+            align-items: center;
+            border-bottom: 3px double #000;
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
-        .judul {
-            text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 30px;
+
+        .kop-surat img {
+            height: 80px;
+            margin-right: 15px;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        th, td {
-            border: 1px solid #444;
-            padding: 6px;
-            text-align: left;
-        }
-        .info {
-            margin-top: 10px;
-        }
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .header img {
-            height: 90px;
-        }
-        .header-text {
+
+        .kop-text {
             flex: 1;
             text-align: center;
         }
-        .header-text div {
-            font-size: 12px;
-        }
-        .header-text .title {
-            font-size: 16px;
+
+        .kop-text h1 {
+            margin: 0;
+            font-size: 18px;
             font-weight: bold;
-            margin-bottom: 4px;
         }
+
+        .kop-text h2 {
+            margin: 4px 0;
+            font-size: 14px;
+            font-weight: normal;
+        }
+
+        .kop-text p {
+            margin: 2px 0;
+            font-size: 11px;
+        }
+
+        .judul {
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 30px 0 20px;
+            text-decoration: underline;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            font-size: 12px;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: #f0f0f0;
+        }
+
+        .section {
+            margin-top: 30px;
+        }
+
         .ttd {
-            margin-top: 40px;
+            width: 100%;
+            margin-top: 50px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .ttd-content {
             text-align: right;
+        }
+
+        .ttd-content strong {
+            display: inline-block;
+            margin-top: 60px;
+            border-top: 1px solid #000;
+            padding-top: 5px;
         }
     </style>
 </head>
 <body>
 
     <!-- Kop Surat -->
-    <div class="header">
-        <div>
-            <img src="assets/images/sprites/3.jpg" alt="Logo">
-        </div>
-        <div class="header-text">
-            <div class="title">LAPORAN HASIL PENDAFTARAN KURSUS MOBIL</div>
-            <div>Jl. Ir Sutami No.5a/Tanjakan Perla KM.4</div>
-            <div>Email: lpkssumberrezeki@gmail.com</div>
-            <div>081275009199</div>
+    <div class="kop-surat">
+        <img src="assets/images/sprites/3.jpg" alt="Logo">
+        <div class="kop-text">
+            <h1>SUMBER REZEKI</h1>
+            <h2>IZIN LPK NO: 503/01/IUP-LPK/DPMPTSP</h2>
+            <p>Jl. Ir. Sutami No.5A / Tanjakan Perla KM.4, Tanjungpinang</p>
+            <p>Email: <u>lpkssumberrezeki@gmail.com</u> | Telp/WA: 0812-7500-9199</p>
         </div>
     </div>
 
+    <!-- Judul Laporan -->
+    <div class="judul">
+        LAPORAN HASIL PREDIKSI PESERTA KURSUS MENGEMUDI
+    </div>
+
     <!-- Informasi Peserta -->
-    <p><strong>Nama:</strong> {{ uji.nama }}</p>
-    <p><strong>Hasil Prediksi:</strong> {{ uji.hasil_prediksi }}</p>
+    <table>
+        <tr>
+            <th style="width: 30%;">Nama Peserta</th>
+            <td>{{ uji.nama }}</td>
+        </tr>
+        <tr>
+            <th>Hasil Prediksi</th>
+            <td>{{ uji.hasil_prediksi }}</td>
+        </tr>
+        <tr>
+            <th>Tanggal Prediksi</th>
+            <td>{{ uji.created_at|date:"d M Y" }}</td>
+        </tr>
+    </table>
 
     <!-- Tabel Kriteria -->
-    <div class="info">
-        <h4>Kriteria yang Diinput:</h4>
+    <div class="section">
+        <p><strong>Tabel Kriteria yang Diinput:</strong></p>
         <table>
             <thead>
                 <tr>
-                    <th>No</th>
-                    <th>Kriteria</th>
-                    <th>Nilai Pilihan</th>
+                    <th style="width: 5%; text-align: center;">No</th>
+                    <th style="width: 45%;">Kriteria</th>
+                    <th style="width: 50%;">Nilai Pilihan</th>
                 </tr>
             </thead>
             <tbody>
                 {% for nilai in nilai_kriteria %}
                 <tr>
-                    <td>{{ forloop.counter }}</td>
+                    <td style="text-align: center;">{{ forloop.counter }}</td>
                     <td>{{ nilai.kriteria.nama }}</td>
                     <td>{{ nilai.pilihan.label }}</td>
                 </tr>
@@ -106,8 +153,10 @@
 
     <!-- Tanda Tangan -->
     <div class="ttd">
-        Tanjungpinang, {{ uji.created_at|date:"d M Y" }}<br><br><br>
-        <strong>Admin</strong>
+        <div class="ttd-content">
+            Tanjungpinang, {{ uji.created_at|date:"d M Y" }}<br><br><br>
+            <strong>Admin</strong>
+        </div>
     </div>
 
 </body>
